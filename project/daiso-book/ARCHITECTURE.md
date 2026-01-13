@@ -36,7 +36,8 @@
 
   hetgwi01님이 설계한 도서 서비스 중심의 아키텍처 다이어그램입니다.
 
-``` graph TD
+```mermaid
+graph TD
     User[Client / Admin] -->|HTTPS| Gateway[Spring Cloud Gateway]
     Gateway --> Front[Front Server<br/>Thymeleaf + Proxy]
 
@@ -61,6 +62,32 @@
         BookSvc -- 3. Raw Data Analysis & Enrichment --> Gemini[Google Gemini AI]
         Gemini -- 4. Refined Data --> BookSvc
     end
+```
+
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Admin as 관리자
+    participant Svc as Books-Search Service
+    participant API as Aladin API
+    participant AI as Gemini AI
+    participant DB as MySQL
+
+    Admin->>Svc: 도서 등록 요청 (ISBN 입력)
+    Svc->>DB: 기존 도서 중복 체크
+    
+    Note over Svc, DB: 데이터가 없을 경우 파이프라인 시작
+    
+    Svc->>API: 도서 원천 데이터 요청
+    API-->>Svc: Raw 메타데이터 반환 (제목, 저자 등)
+    
+    Svc->>AI: 데이터 분석 및 보완 요청
+    Note right of AI: 서비스 정책에 맞는<br/>카테고리/태그 자동 생성
+    AI-->>Svc: 가공된 JSON 데이터 반환
+    
+    Svc->>DB: 최종 데이터 저장
+    Svc-->>Admin: 등록 완료 알림
 ```
 
   ---
