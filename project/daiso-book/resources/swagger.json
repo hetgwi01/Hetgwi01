@@ -1,0 +1,2751 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "OpenAPI definition",
+        "version": "v0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8088",
+            "description": "Generated server url"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Review V2",
+            "description": "리뷰 등록, 조회, 수정 API"
+        },
+        {
+            "name": "Book Management Admin",
+            "description": "관리자용 도서 관리 및 메타데이터 API"
+        },
+        {
+            "name": "Book V2 API",
+            "description": "도서 등록, 수정, 삭제 및 조회 기능을 제공하는 API (v2)"
+        },
+        {
+            "name": "System Dev Tools",
+            "description": "시스템 관리, 이미지 마이그레이션 및 테스트용 API"
+        },
+        {
+            "name": "Like V2 API",
+            "description": "도서 좋아요 등록, 취소 및 내 좋아요 목록 조회 기능을 제공합니다."
+        },
+        {
+            "name": "Category Coupon & Info",
+            "description": "쿠폰 적용 및 도서 정보 조회를 위한 카테고리 데이터 API"
+        },
+        {
+            "name": "Image API",
+            "description": "이미지 업로드 및 관리 API"
+        },
+        {
+            "name": "Category V2",
+            "description": "도서 카테고리 관리 API (계층 구조 지원)"
+        },
+        {
+            "name": "Book Order",
+            "description": "주문 서비스 연동용 도서 정보 조회 API"
+        }
+    ],
+    "paths": {
+        "/api/v2/books/categories/{categoryId}": {
+            "get": {
+                "tags": [
+                    "Book V2 API"
+                ],
+                "summary": "카테고리별 도서 목록 조회",
+                "description": "특정 카테고리에 속한 도서 목록을 조회합니다.",
+                "operationId": "getBookListByCategoryId",
+                "parameters": [
+                    {
+                        "name": "pageable",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Pageable"
+                        }
+                    },
+                    {
+                        "name": "categoryId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookListByCategoryRespDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Category V2"
+                ],
+                "summary": "기존 카테고리 수정",
+                "description": "특정 카테고리의 정보를 변경합니다.",
+                "operationId": "modifyCategory",
+                "parameters": [
+                    {
+                        "name": "categoryId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CategoryModifyReqDTO"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "카테고리 수정 성공"
+                    },
+                    "404": {
+                        "description": "존재하지 않는 카테고리 ID"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Category V2"
+                ],
+                "summary": "카테고리 삭제",
+                "description": "특정 카테고리를 삭제합니다.",
+                "operationId": "deleteCategory",
+                "parameters": [
+                    {
+                        "name": "categoryId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "카테고리 삭제 성공"
+                    },
+                    "409": {
+                        "description": "하위 카테고리 존재 등 연관 데이터로 인한 삭제 불가"
+                    }
+                }
+            }
+        },
+        "/api/reviews/{reviewId}": {
+            "get": {
+                "tags": [
+                    "Review V2"
+                ],
+                "summary": "리뷰 상세 조회",
+                "description": "리뷰 ID를 통해 특정 리뷰의 상세 정보를 조회합니다.",
+                "operationId": "getReviewById",
+                "parameters": [
+                    {
+                        "name": "reviewId",
+                        "in": "path",
+                        "description": "리뷰 고유 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReviewRespDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Review V2"
+                ],
+                "summary": "리뷰 수정",
+                "description": "기존에 작성한 리뷰 내용 및 이미지를 수정합니다.",
+                "operationId": "updateReviewById",
+                "parameters": [
+                    {
+                        "name": "reviewId",
+                        "in": "path",
+                        "description": "수정할 리뷰 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "metadata": {
+                                        "type": "string",
+                                        "description": "수정할 리뷰 데이터 (JSON 문자열)"
+                                    },
+                                    "image0": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "수정할 이미지 1"
+                                    },
+                                    "image1": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "수정할 이미지 2"
+                                    },
+                                    "image2": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "수정할 이미지 3"
+                                    }
+                                },
+                                "required": [
+                                    "metadata"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "리뷰 수정 성공 (반환 데이터 없음)"
+                    },
+                    "403": {
+                        "description": "수정 권한 없음"
+                    },
+                    "404": {
+                        "description": "리뷰를 찾을 수 없음"
+                    }
+                }
+            }
+        },
+        "/migrate-images": {
+            "post": {
+                "tags": [
+                    "System Dev Tools"
+                ],
+                "summary": "이미지 일괄 마이그레이션 실행",
+                "description": "기존 서버의 이미지들을 배치를 통해 MinIO로 이전합니다.",
+                "operationId": "migrate",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/create": {
+            "post": {
+                "tags": [
+                    "System Dev Tools"
+                ],
+                "summary": "도서 생성 통합 테스트",
+                "description": "Multipart Form 데이터를 사용하여 도서 메타데이터와 이미지를 한 번에 등록 테스트합니다.",
+                "operationId": "createBook",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TestReq"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "테스트 등록 성공"
+                    }
+                }
+            }
+        },
+        "/api/v2/books": {
+            "get": {
+                "tags": [
+                    "Book V2 API"
+                ],
+                "summary": "리스트 타입별 도서 조회",
+                "description": "베스트셀러, 신간 등 타입별 도서 목록을 가져옵니다.",
+                "operationId": "getBookListBySort",
+                "parameters": [
+                    {
+                        "name": "pageable",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Pageable"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "NEW_RELEASES",
+                                "BOOK_OF_THE_WEEK"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SortBookListRespDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Book V2 API"
+                ],
+                "summary": "단일 도서 등록",
+                "description": "메타데이터 JSON과 최대 5개의 이미지를 업로드하여 도서를 등록합니다.",
+                "operationId": "addBook",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "metadata": {
+                                        "type": "string"
+                                    },
+                                    "image0": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "image1": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "image2": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "image3": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "image4": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "required": [
+                                    "metadata"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "도서 등록 성공"
+                    }
+                }
+            }
+        },
+        "/api/v2/books/{bookId}/likes": {
+            "post": {
+                "tags": [
+                    "Like V2 API"
+                ],
+                "summary": "도서 좋아요 등록",
+                "description": "특정 도서에 좋아요를 표시합니다.",
+                "operationId": "addLike",
+                "parameters": [
+                    {
+                        "name": "bookId",
+                        "in": "path",
+                        "description": "도서 고유 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "description": "사용자 고유 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "좋아요 등록 성공"
+                    },
+                    "404": {
+                        "description": "존재하지 않는 도서 ID"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Like V2 API"
+                ],
+                "summary": "도서 좋아요 취소",
+                "description": "기존에 표시했던 도서의 좋아요를 삭제합니다.",
+                "operationId": "deleteLike",
+                "parameters": [
+                    {
+                        "name": "bookId",
+                        "in": "path",
+                        "description": "도서 고유 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "description": "사용자 고유 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "좋아요 취소 성공",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "좋아요 기록을 찾을 수 없음",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/books/order-service/order-cancel": {
+            "post": {
+                "tags": [
+                    "Book Order"
+                ],
+                "summary": "주문 취소 시 재고 및 데이터 복구",
+                "description": "주문이 취소되었을 때 해당 도서들의 상태를 업데이트하거나 관련 처리를 수행합니다.",
+                "operationId": "orderCancel",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OrderCancelRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "취소 처리 성공"
+                    },
+                    "404": {
+                        "description": "주문 정보를 찾을 수 없음"
+                    }
+                }
+            }
+        },
+        "/api/v2/books/order-service/list/book-review": {
+            "post": {
+                "tags": [
+                    "Book Order"
+                ],
+                "summary": "사용자 도서 리뷰 상태 조회",
+                "description": "주문한 도서들에 대해 사용자가 리뷰를 작성했는지 여부를 포함한 목록을 조회합니다.",
+                "operationId": "getBookReviewList",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BookReviewRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/BookReviewResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/books/order-service/books/list": {
+            "post": {
+                "tags": [
+                    "Book Order"
+                ],
+                "summary": "주문 도서 요약 목록 조회",
+                "description": "장바구니나 주문 목록 표시를 위한 도서 요약 정보를 조회합니다.",
+                "operationId": "getBookList",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BookIdListReqDTO"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/OrderBookSummeryDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/books/order-service/books/info": {
+            "post": {
+                "tags": [
+                    "Book Order"
+                ],
+                "summary": "주문 도서 상세 정보 조회",
+                "description": "주문 처리에 필요한 도서들의 상세 정보를 리스트로 조회합니다.",
+                "operationId": "getOrderBookInfoList",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BookIdListReqDTO"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "조회 성공",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrderBooksInfoRespDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 도서 ID 리스트",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrderBooksInfoRespDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/books/categories": {
+            "get": {
+                "tags": [
+                    "Category V2"
+                ],
+                "summary": "전체 카테고리 목록 조회",
+                "description": "모든 카테고리를 평면적인 리스트 형태로 조회합니다.",
+                "operationId": "getAllCategoryList",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CategoryList"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Category V2"
+                ],
+                "summary": "새 카테고리 등록",
+                "description": "새로운 도서 카테고리를 생성합니다.",
+                "operationId": "postCategory",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CategoryRegisterReqDTO"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "카테고리 생성 성공"
+                    },
+                    "400": {
+                        "description": "잘못된 입력 값 (중복된 이름 등)"
+                    }
+                }
+            }
+        },
+        "/api/v2/books/batch": {
+            "post": {
+                "tags": [
+                    "Book V2 API"
+                ],
+                "summary": "복수 도서 등록 (Batch)",
+                "description": "파일(CSV 등)을 업로드하여 여러 권의 도서를 한 번에 등록합니다.",
+                "operationId": "addBooks",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "bookFile": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "일괄 등록 요청 성공"
+                    }
+                }
+            }
+        },
+        "/api/reviews": {
+            "post": {
+                "tags": [
+                    "Review V2"
+                ],
+                "summary": "리뷰 등록",
+                "description": "도서 리뷰를 등록하고 포인트 적립을 요청합니다. 이미지 최대 3장까지 지원합니다.",
+                "operationId": "addReview",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "metadata": {
+                                        "type": "string",
+                                        "description": "리뷰 데이터 (JSON 문자열)"
+                                    },
+                                    "image0": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "리뷰 이미지 1"
+                                    },
+                                    "image1": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "리뷰 이미지 2"
+                                    },
+                                    "image2": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "리뷰 이미지 3"
+                                    }
+                                },
+                                "required": [
+                                    "metadata"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "리뷰 등록 성공"
+                    },
+                    "400": {
+                        "description": "잘못된 요청 파라미터"
+                    },
+                    "404": {
+                        "description": "도서를 찾을 수 없음"
+                    }
+                }
+            }
+        },
+        "/api/books/images/upload": {
+            "post": {
+                "tags": [
+                    "Image API"
+                ],
+                "summary": "이미지 단일 업로드",
+                "description": "파일을 업로드하고, 프록시를 통해 접근 가능한 이미지 경로를 반환받습니다.",
+                "operationId": "upload",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "업로드할 이미지 파일 (MultipartFile)"
+                                    }
+                                },
+                                "required": [
+                                    "image"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "업로드 성공 (프록시 URL 반환)",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": "/proxy/image?url=http://minio-url/bucket/image.jpg"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 파일 형식 또는 업로드 실패",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "서버 내부 이미지 처리 오류",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/books/{bookId}": {
+            "get": {
+                "tags": [
+                    "Book V2 API"
+                ],
+                "summary": "도서 상세 정보 조회",
+                "operationId": "getBookDetail",
+                "parameters": [
+                    {
+                        "name": "bookId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookRespDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Book V2 API"
+                ],
+                "summary": "ID로 도서 삭제",
+                "description": "도서 고유 ID를 이용해 삭제합니다.",
+                "operationId": "deleteBookById",
+                "parameters": [
+                    {
+                        "name": "bookId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "도서 삭제 성공"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Book V2 API"
+                ],
+                "summary": "단일 도서 수정",
+                "description": "기존 도서의 정보 및 이미지를 수정합니다.",
+                "operationId": "motifyBook",
+                "parameters": [
+                    {
+                        "name": "bookId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "metadata": {
+                                        "type": "string"
+                                    },
+                                    "image0": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "image1": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "image2": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "image3": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "image4": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "required": [
+                                    "metadata"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "도서 수정 성공 (반환 값 없음)"
+                    }
+                }
+            }
+        },
+        "/upload": {
+            "get": {
+                "tags": [
+                    "System Dev Tools"
+                ],
+                "summary": "외부 URL 이미지 MinIO 업로드 테스트",
+                "description": "이미지 URL을 통해 MinIO 스토리지로 직접 업로드를 시도합니다.",
+                "operationId": "uploadTest",
+                "parameters": [
+                    {
+                        "name": "bookId",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "imageUrl",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/likes/me": {
+            "get": {
+                "tags": [
+                    "Like V2 API"
+                ],
+                "summary": "내 좋아요 목록 조회",
+                "description": "현재 로그인한 사용자가 좋아요를 누른 도서 목록을 조회합니다.",
+                "operationId": "getMyLikeList",
+                "parameters": [
+                    {
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "description": "사용자 고유 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "조회 성공",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MyLikeList"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/books/{isbn}/register-page": {
+            "get": {
+                "tags": [
+                    "Book Management Admin"
+                ],
+                "summary": "ISBN 기반 도서 검색",
+                "description": "외부 API 혹은 기존 DB에서 ISBN으로 도서 정보를 사전 조회합니다.",
+                "operationId": "getBookRegisterRedirectSearchInfo",
+                "parameters": [
+                    {
+                        "name": "isbn",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "조회 성공",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FindIsbnMetaData"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ISBN 형식이 올바르지 않음",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FindIsbnMetaData"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "해당 ISBN으로 검색된 도서 정보가 없음",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FindIsbnMetaData"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/books/{bookId}/modify": {
+            "get": {
+                "tags": [
+                    "Book V2 API"
+                ],
+                "summary": "수정용 도서 데이터 조회",
+                "description": "수정 화면 구성을 위한 기존 데이터를 조회합니다.",
+                "operationId": "getBookUpdateView",
+                "parameters": [
+                    {
+                        "name": "bookId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookUpdateView"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/books/{bookId}/metadata/modification": {
+            "get": {
+                "tags": [
+                    "Book Management Admin"
+                ],
+                "summary": "도서 수정용 상세 정보 조회",
+                "description": "특정 도서의 기존 정보와 수정 시 필요한 선택지 데이터를 함께 조회합니다.",
+                "operationId": "getBookModifyPageInfo",
+                "parameters": [
+                    {
+                        "name": "bookId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "조회 성공",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ModifyBookMetaData"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "수정할 도서 정보를 찾을 수 없음",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ModifyBookMetaData"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/books/metadata/registration": {
+            "get": {
+                "tags": [
+                    "Book Management Admin"
+                ],
+                "summary": "도서 등록용 기초 데이터 조회",
+                "description": "도서 등록 시 선택해야 하는 카테고리, 출판사 리스트 등 기초 데이터를 조회합니다.",
+                "operationId": "getBookRegisterPageInfo",
+                "responses": {
+                    "200": {
+                        "description": "조회 성공",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RegisterBookMetaData"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/books/main-page": {
+            "get": {
+                "tags": [
+                    "Book Management Admin"
+                ],
+                "summary": "메인 페이지 도서 목록 조회",
+                "description": "사용자 메인 화면에 노출될 도서 목록을 조회합니다. 사용자 ID 전달 시 개인화된 정보를 포함할 수 있습니다.",
+                "operationId": "getMainPageBookList",
+                "parameters": [
+                    {
+                        "name": "pageable",
+                        "in": "query",
+                        "description": "페이지 번호, 크기, 정렬 정보",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Pageable"
+                        }
+                    },
+                    {
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "description": "사용자 식별 ID (선택 사항)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "조회 성공",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MainPageBookListRespDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/books/isbn/{isbn}/exist": {
+            "get": {
+                "tags": [
+                    "Book V2 API"
+                ],
+                "summary": "ISBN 중복 체크",
+                "description": "해당 ISBN이 이미 등록되어 있는지 확인합니다.",
+                "operationId": "getBookRegisterInfoByIsbn",
+                "parameters": [
+                    {
+                        "name": "isbn",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/books/categories/tree": {
+            "get": {
+                "tags": [
+                    "Category V2"
+                ],
+                "summary": "카테고리 트리 구조 조회",
+                "description": "부모-자식 관계가 포함된 트리 구조의 카테고리 목록을 조회합니다.",
+                "operationId": "getCategoryTreeList",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CategoryTreeListRespDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/books/admin": {
+            "get": {
+                "tags": [
+                    "Book Management Admin"
+                ],
+                "summary": "관리자 도서 목록 페이지 정보 조회",
+                "description": "도서 관리 테이블에 필요한 데이터와 페이징 정보를 조회합니다.",
+                "operationId": "getBookAdminPageInfo",
+                "parameters": [
+                    {
+                        "name": "pageable",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Pageable"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "조회 성공",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminBookMetaData"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "관리자 권한 없음",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminBookMetaData"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/books/admin-total-info": {
+            "get": {
+                "tags": [
+                    "Book V2 API"
+                ],
+                "summary": "관리자 통계 데이터 조회",
+                "operationId": "getTotalData",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TotalDataRespDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/books/admin-book-list": {
+            "get": {
+                "tags": [
+                    "Book V2 API"
+                ],
+                "summary": "관리자용 도서 전체 목록 조회",
+                "operationId": "findAllForAdmin",
+                "parameters": [
+                    {
+                        "name": "pageable",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Pageable"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PageBookAdminResponseDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reviews/me": {
+            "get": {
+                "tags": [
+                    "Review V2"
+                ],
+                "summary": "내 리뷰 목록 조회",
+                "description": "로그인한 사용자가 작성한 모든 리뷰를 조회합니다.",
+                "operationId": "getReviewByUserId",
+                "parameters": [
+                    {
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "description": "사용자 고유 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ReviewRespDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reviews/books/{bookId}": {
+            "get": {
+                "tags": [
+                    "Review V2"
+                ],
+                "summary": "도서별 리뷰 조회",
+                "description": "특정 도서에 달린 모든 리뷰를 조회합니다.",
+                "operationId": "getReviewByBookId",
+                "parameters": [
+                    {
+                        "name": "bookId",
+                        "in": "path",
+                        "description": "도서 고유 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ReviewRespDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/books/{bookId}/category": {
+            "get": {
+                "tags": [
+                    "Category Coupon & Info"
+                ],
+                "summary": "도서의 카테고리 정보 조회",
+                "description": "특정 도서가 속한 카테고리 정보를 조회합니다.",
+                "operationId": "getBookCategory",
+                "parameters": [
+                    {
+                        "name": "bookId",
+                        "in": "path",
+                        "description": "도서 고유 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "조회 성공",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookCategoryResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "해당 도서의 카테고리 정보를 찾을 수 없음",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookCategoryResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/books/categoriesIds": {
+            "get": {
+                "tags": [
+                    "Category Coupon & Info"
+                ],
+                "summary": "카테고리 ID 리스트로 단순 정보 조회",
+                "description": "쿠폰 적용 범위 확인 등을 위해 여러 카테고리의 이름과 ID 목록을 조회합니다.",
+                "operationId": "getCategoriesByIds",
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "query",
+                        "description": "조회할 카테고리 ID 목록",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "int64"
+                            }
+                        },
+                        "example": "1,2,3"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "조회 성공",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CategorySimpleResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/delete": {
+            "delete": {
+                "tags": [
+                    "System Dev Tools"
+                ],
+                "summary": "MinIO 객체 삭제 테스트",
+                "operationId": "deleteTest",
+                "parameters": [
+                    {
+                        "name": "objectName",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/books/isbn/{isbn}": {
+            "delete": {
+                "tags": [
+                    "Book V2 API"
+                ],
+                "summary": "ISBN으로 도서 삭제",
+                "description": "도서 ISBN 번호를 이용해 삭제합니다.",
+                "operationId": "deleteBookByIsbn",
+                "parameters": [
+                    {
+                        "name": "isbn",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "도서 삭제 성공"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "CategoryModifyReqDTO": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "deep": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "TestReq": {
+                "type": "object",
+                "properties": {
+                    "metadata": {
+                        "type": "string"
+                    },
+                    "image0": {
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "image1": {
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "image2": {
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "image3": {
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "image4": {
+                        "type": "string",
+                        "format": "binary"
+                    }
+                }
+            },
+            "OrderCancelRequest": {
+                "type": "object",
+                "description": "취소할 주문 및 도서 정보",
+                "properties": {
+                    "bookId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "BookOrderDetailRequest": {
+                "type": "object",
+                "properties": {
+                    "bookId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "orderDetailId": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "BookReviewRequest": {
+                "type": "object",
+                "description": "사용자 ID 및 도서 상세 정보",
+                "properties": {
+                    "userId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "bookOrderDetailRequests": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/BookOrderDetailRequest"
+                        }
+                    }
+                }
+            },
+            "BookResponse": {
+                "type": "object",
+                "properties": {
+                    "bookId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "imageList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ImageRespDTO"
+                        }
+                    }
+                }
+            },
+            "BookReviewResponse": {
+                "type": "object",
+                "properties": {
+                    "book": {
+                        "$ref": "#/components/schemas/BookResponse"
+                    },
+                    "orderDetailId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "reviewId": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "ImageRespDTO": {
+                "type": "object",
+                "properties": {
+                    "no": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "path": {
+                        "type": "string"
+                    },
+                    "imageType": {
+                        "type": "string",
+                        "enum": [
+                            "COVER",
+                            "DETAIL",
+                            "REVIEW"
+                        ]
+                    }
+                }
+            },
+            "BookIdListReqDTO": {
+                "type": "object",
+                "description": "도서 ID 리스트",
+                "properties": {
+                    "bookIdList": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                }
+            },
+            "OrderBookSummeryDTO": {
+                "type": "object",
+                "properties": {
+                    "bookId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "OrderBookInfoRespDTO": {
+                "type": "object",
+                "properties": {
+                    "bookId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "stock": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ON_SALE",
+                            "SOLD_OUT",
+                            "DISCONTINUE",
+                            "UNPUBLISHED"
+                        ]
+                    },
+                    "discountPercentage": {
+                        "type": "number"
+                    },
+                    "discountPrice": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "coverImage": {
+                        "type": "string"
+                    },
+                    "volumeNo": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "isPackaging": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "OrderBooksInfoRespDTO": {
+                "type": "object",
+                "properties": {
+                    "orderBookInfoRespDTOList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OrderBookInfoRespDTO"
+                        }
+                    }
+                }
+            },
+            "CategoryRegisterReqDTO": {
+                "type": "object",
+                "properties": {
+                    "categoryId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "deep": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "preCategoryId": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "AuthorRespDTO": {
+                "type": "object",
+                "properties": {
+                    "authorId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "authorName": {
+                        "type": "string"
+                    },
+                    "roleId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "roleName": {
+                        "type": "string"
+                    }
+                }
+            },
+            "LikeListRespDTO": {
+                "type": "object",
+                "properties": {
+                    "likeId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "bookId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "isbn": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "authorRespDTOList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AuthorRespDTO"
+                        }
+                    },
+                    "price": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "discountPercentage": {
+                        "type": "number"
+                    },
+                    "discountPrice": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ON_SALE",
+                            "SOLD_OUT",
+                            "DISCONTINUE",
+                            "UNPUBLISHED"
+                        ]
+                    },
+                    "image": {
+                        "type": "string"
+                    },
+                    "volumeNo": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "packaging": {
+                        "type": "boolean"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "MyLikeList": {
+                "type": "object",
+                "properties": {
+                    "likeList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/LikeListRespDTO"
+                        }
+                    }
+                }
+            },
+            "Pageable": {
+                "type": "object",
+                "properties": {
+                    "page": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 1
+                    },
+                    "sort": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "BookListRespDTO": {
+                "type": "object",
+                "properties": {
+                    "bookId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "isbn": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "authorList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AuthorRespDTO"
+                        }
+                    },
+                    "publisher": {
+                        "type": "string"
+                    },
+                    "publicationDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "price": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "discountPercentage": {
+                        "type": "number"
+                    },
+                    "discountPrice": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ON_SALE",
+                            "SOLD_OUT",
+                            "DISCONTINUE",
+                            "UNPUBLISHED"
+                        ]
+                    },
+                    "imageList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ImageRespDTO"
+                        }
+                    },
+                    "categories": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CategoryRespDTO"
+                        }
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TagRespDTO"
+                        }
+                    },
+                    "volumeNo": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "isPackaging": {
+                        "type": "boolean"
+                    },
+                    "isLike": {
+                        "type": "boolean"
+                    },
+                    "isDeleted": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "CategoryRespDTO": {
+                "type": "object",
+                "properties": {
+                    "categoryId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "categoryName": {
+                        "type": "string"
+                    },
+                    "deep": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "preCategoryId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "preCategoryName": {
+                        "type": "string"
+                    }
+                }
+            },
+            "SortBookListRespDTO": {
+                "type": "object",
+                "properties": {
+                    "bookListRespDTOS": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/BookListRespDTO"
+                        }
+                    }
+                }
+            },
+            "TagRespDTO": {
+                "type": "object",
+                "properties": {
+                    "tagId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "tagName": {
+                        "type": "string"
+                    }
+                }
+            },
+            "AuthorInfoData": {
+                "type": "object",
+                "properties": {
+                    "authorName": {
+                        "type": "string"
+                    },
+                    "roleName": {
+                        "type": "string"
+                    }
+                }
+            },
+            "BookInfoDataView": {
+                "type": "object",
+                "properties": {
+                    "isbn": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "index": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "authorList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AuthorInfoData"
+                        }
+                    },
+                    "publisher": {
+                        "type": "string"
+                    },
+                    "publicationDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "price": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "imageList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ImageRespDTO"
+                        }
+                    },
+                    "volumeNo": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "categories": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CategoryRespDTO"
+                        }
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TagInfoData"
+                        }
+                    }
+                }
+            },
+            "CategoryList": {
+                "type": "object",
+                "properties": {
+                    "categoryPathList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CategoryPath"
+                        }
+                    }
+                }
+            },
+            "CategoryPath": {
+                "type": "object",
+                "properties": {
+                    "categoryId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "categoryName": {
+                        "type": "string"
+                    },
+                    "path": {
+                        "type": "string"
+                    }
+                }
+            },
+            "FindIsbnMetaData": {
+                "type": "object",
+                "properties": {
+                    "refinedBook": {
+                        "$ref": "#/components/schemas/BookInfoDataView"
+                    },
+                    "categoryList": {
+                        "$ref": "#/components/schemas/CategoryList"
+                    },
+                    "roleNameList": {
+                        "$ref": "#/components/schemas/RoleNameListRespDTO"
+                    }
+                }
+            },
+            "RoleNameListRespDTO": {
+                "type": "object",
+                "properties": {
+                    "roleNames": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "TagInfoData": {
+                "type": "object",
+                "properties": {
+                    "tagName": {
+                        "type": "string"
+                    }
+                }
+            },
+            "BookRespDTO": {
+                "type": "object",
+                "properties": {
+                    "bookId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "isbn": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "index": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "authorList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AuthorRespDTO"
+                        }
+                    },
+                    "publisher": {
+                        "type": "string"
+                    },
+                    "publicationDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "price": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "discountPercentage": {
+                        "type": "number"
+                    },
+                    "discountPrice": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "isPackaging": {
+                        "type": "boolean"
+                    },
+                    "stock": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ON_SALE",
+                            "SOLD_OUT",
+                            "DISCONTINUE",
+                            "UNPUBLISHED"
+                        ]
+                    },
+                    "imageList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ImageRespDTO"
+                        }
+                    },
+                    "volumeNo": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "categories": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CategoryRespDTO"
+                        }
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TagRespDTO"
+                        }
+                    },
+                    "likeCount": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "isLike": {
+                        "type": "boolean"
+                    },
+                    "reviewList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ReviewRespDTO"
+                        }
+                    },
+                    "isDeleted": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "ReviewRespDTO": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "bookId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "bookTitle": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "content": {
+                        "type": "string"
+                    },
+                    "rating": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "modifiedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "reviewImages": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ImageRespDTO"
+                        }
+                    }
+                }
+            },
+            "BookUpdateView": {
+                "type": "object",
+                "properties": {
+                    "bookId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "isbn": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "index": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "authorList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AuthorRespDTO"
+                        }
+                    },
+                    "publisher": {
+                        "type": "string"
+                    },
+                    "publicationDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "price": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "isPackaging": {
+                        "type": "boolean"
+                    },
+                    "stock": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ON_SALE",
+                            "SOLD_OUT",
+                            "DISCONTINUE",
+                            "UNPUBLISHED"
+                        ]
+                    },
+                    "imageList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ImageRespDTO"
+                        }
+                    },
+                    "volumeNo": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "categories": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CategoryRespDTO"
+                        }
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TagRespDTO"
+                        }
+                    },
+                    "isDeleted": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "ModifyBookMetaData": {
+                "type": "object",
+                "properties": {
+                    "bookUpdateView": {
+                        "$ref": "#/components/schemas/BookUpdateView"
+                    },
+                    "categoryList": {
+                        "$ref": "#/components/schemas/CategoryList"
+                    },
+                    "roleNameList": {
+                        "$ref": "#/components/schemas/RoleNameListRespDTO"
+                    }
+                }
+            },
+            "RegisterBookMetaData": {
+                "type": "object",
+                "properties": {
+                    "categoryList": {
+                        "$ref": "#/components/schemas/CategoryList"
+                    },
+                    "roleNameList": {
+                        "$ref": "#/components/schemas/RoleNameListRespDTO"
+                    }
+                }
+            },
+            "MainPageBookListRespDTO": {
+                "type": "object",
+                "properties": {
+                    "bookOfTheWeek": {
+                        "$ref": "#/components/schemas/SortBookListRespDTO"
+                    },
+                    "newReleases": {
+                        "$ref": "#/components/schemas/SortBookListRespDTO"
+                    }
+                }
+            },
+            "BookListByCategoryRespDTO": {
+                "type": "object",
+                "properties": {
+                    "bookList": {
+                        "$ref": "#/components/schemas/PageBookListRespDTO"
+                    }
+                }
+            },
+            "PageBookListRespDTO": {
+                "type": "object",
+                "properties": {
+                    "totalElements": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "totalPages": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "pageable": {
+                        "$ref": "#/components/schemas/PageableObject"
+                    },
+                    "first": {
+                        "type": "boolean"
+                    },
+                    "last": {
+                        "type": "boolean"
+                    },
+                    "numberOfElements": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "content": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/BookListRespDTO"
+                        }
+                    },
+                    "number": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "sort": {
+                        "$ref": "#/components/schemas/SortObject"
+                    },
+                    "empty": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "PageableObject": {
+                "type": "object",
+                "properties": {
+                    "paged": {
+                        "type": "boolean"
+                    },
+                    "pageNumber": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "pageSize": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "unpaged": {
+                        "type": "boolean"
+                    },
+                    "offset": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "sort": {
+                        "$ref": "#/components/schemas/SortObject"
+                    }
+                }
+            },
+            "SortObject": {
+                "type": "object",
+                "properties": {
+                    "sorted": {
+                        "type": "boolean"
+                    },
+                    "unsorted": {
+                        "type": "boolean"
+                    },
+                    "empty": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "CategoryTree": {
+                "type": "object",
+                "properties": {
+                    "categoryId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "preCategoryId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "deep": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "CategoryTreeListRespDTO": {
+                "type": "object",
+                "properties": {
+                    "categoryTreeList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CategoryTree"
+                        }
+                    }
+                }
+            },
+            "AdminBookMetaData": {
+                "type": "object",
+                "properties": {
+                    "bookAdminResponseDTOS": {
+                        "$ref": "#/components/schemas/PageBookAdminResponseDTO"
+                    },
+                    "totalDate": {
+                        "$ref": "#/components/schemas/TotalDataRespDTO"
+                    }
+                }
+            },
+            "BookAdminResponseDTO": {
+                "type": "object",
+                "properties": {
+                    "bookId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "isbn": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "imageList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ImageRespDTO"
+                        }
+                    },
+                    "price": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "discountPercentage": {
+                        "type": "number"
+                    },
+                    "discountPrice": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "stock": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ON_SALE",
+                            "SOLD_OUT",
+                            "DISCONTINUE",
+                            "UNPUBLISHED"
+                        ]
+                    },
+                    "publicationDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "publisher": {
+                        "type": "string"
+                    },
+                    "isDeleted": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "PageBookAdminResponseDTO": {
+                "type": "object",
+                "properties": {
+                    "totalElements": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "totalPages": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "pageable": {
+                        "$ref": "#/components/schemas/PageableObject"
+                    },
+                    "first": {
+                        "type": "boolean"
+                    },
+                    "last": {
+                        "type": "boolean"
+                    },
+                    "numberOfElements": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "content": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/BookAdminResponseDTO"
+                        }
+                    },
+                    "number": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "sort": {
+                        "$ref": "#/components/schemas/SortObject"
+                    },
+                    "empty": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "TotalDataRespDTO": {
+                "type": "object",
+                "properties": {
+                    "totalCount": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "soldOutCount": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "newReviewCount": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "categoryCount": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "BookCategoryResponse": {
+                "type": "object",
+                "properties": {
+                    "bookId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "primaryCategoryId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "secondaryCategoryId": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "CategorySimpleResponse": {
+                "type": "object",
+                "properties": {
+                    "categoryId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "categoryName": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
