@@ -43,4 +43,4 @@
 	- `@Retryable` 적용으로 일시적 네트워크 오류 시 서비스 간 통신 안정성 보장 
 	- 복합 할인 정책 엔진 구현 및 대량 조회 시 **N+1 문제 해결**을 위한 쿼리 튜닝 수행
 
-참고: [프로젝트 기록](./project/daiso-book/PROJECT-HISTORY.md), [프로젝트 아키텍처](./project/daiso-book/ARCHITECTURE.md)
+참고: [프로젝트 기록](./project/daiso-book/PROJECT-HISTORY.md), [프로젝트 아키텍처](./project/daiso-book/ARCHITECTURE.md), [API 명세](./project/daiso-book/API.md)
