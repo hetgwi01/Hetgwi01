@@ -271,10 +271,7 @@ flowchart LR
 
 > 백엔드 로직의 실제 동작 과정을 확인할 수 있는 시연 영상입니다.
 
-아직 녹화를 안함
-
-
-[![Daiso-Book 프로젝트 시연 영상](https://www.youtube.com/watch?v=wpULXKnerE4)
+![Daiso-Book 프로젝트 시연 영상](https://www.youtube.com/watch?v=wpULXKnerE4)
 
 
 ##### 🕒 타임라인 및 핵심 포인트
